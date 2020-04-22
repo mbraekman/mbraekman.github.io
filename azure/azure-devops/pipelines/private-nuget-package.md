@@ -3,9 +3,9 @@
 In some cases a NuGet-package has been published inside a private feed (Azure Artifacts), within a different project. In which case you might hit some difficulties in running build pipelines for projects referring those packages. 
 
 ## Requirements
-- [Personal Access Token](#Personal-Access-Token)
-- [Service Connection to the private feed](#Service-Connection)
-- [Configure the build pipeline](#Configure-the-build-pipeline)
+- [Personal Access Token](#personal-access-token)
+- [Service Connection to the private feed](#service-connection)
+- [Configure the build pipeline](#configure-the-build-pipeline)
 
 
 ### Personal Access Token
