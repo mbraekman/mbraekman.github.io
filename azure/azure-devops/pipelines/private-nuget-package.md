@@ -4,7 +4,7 @@ In some cases a NuGet-package has been published inside a private feed (Azure Ar
 
 ## Requirements
 - [Personal Access Token](#personal-access-token)
-- [Service Connection to the private feed](#service-connection)
+- [Service Connection to the private feed](#create-a-service-connection)
 - [Configure the build pipeline](#configure-the-build-pipeline)
 
 
@@ -14,7 +14,7 @@ Ensure you obtain a personal access token linked to the organization in which th
 ![Create-a-PAT](../../../images/azure-devops/AzureDevOps_PAT.png)
 
 
-### Service Connection
+### Create a Service Connection
 In order to identify the location of the private packages and to be able to point towards it from the pipeline, you need to create a service connection.  
 When creating a new service connection, make sure to select the "NuGet" connection type.  
 
