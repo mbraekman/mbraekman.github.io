@@ -11,7 +11,7 @@ In some cases a NuGet-package has been published inside a private feed (Azure Ar
 ### Personal Access Token
 Ensure you obtain a personal access token linked to the organization in which the package has been published and make sure to enable "Read"-access for packages.
 
-![Create-a-PAT](../../images/AzureDevOps_PAT.png)
+![Create-a-PAT](../../../images/AzureDevOps_PAT.png)
 
 
 ### Service Connection
