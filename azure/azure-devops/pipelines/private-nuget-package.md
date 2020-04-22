@@ -11,18 +11,18 @@ In some cases a NuGet-package has been published inside a private feed (Azure Ar
 ### Personal Access Token
 Ensure you obtain a personal access token linked to the organization in which the package has been published and make sure to enable "Read"-access for packages.
 
-![Create-a-PAT](../../../images/AzureDevOps_PAT.png)
+![Create-a-PAT](../../../_site/assets/images/azure-devops/AzureDevOps_PAT.png)
 
 
 ### Service Connection
 In order to identify the location of the private packages and to be able to point towards it from the pipeline, you need to create a service connection.  
 When creating a new service connection, make sure to select the "NuGet" connection type.  
 
-![Create-a-ServiceConnection-NuGet](../../../images/AzureDevOps_ServiceConnection_NuGet.png)
+![Create-a-ServiceConnection-NuGet](../../../_site/assets/images/azure-devops/AzureDevOps_ServiceConnection_NuGet.png)
 
 Next to that, make sure to select the 'External Azure DevOps Server'-option, provide the url to the feed you require and fill in the newly created PAT, before saving.  
 
-![Create-a-ServiceConnection-NuGet-ExternalDevOps](../../../images/AzureDevOps_ServiceConnection_NuGet_ExternalDevOpsServer.png)
+![Create-a-ServiceConnection-NuGet-ExternalDevOps](../../../_site/assets/images/azure-devops/AzureDevOps_ServiceConnection_NuGet_ExternalDevOpsServer.png)
 
 ### Configure the build pipeline
 In order to obtain access to the private NuGet package, ensure to add the following tasks:
