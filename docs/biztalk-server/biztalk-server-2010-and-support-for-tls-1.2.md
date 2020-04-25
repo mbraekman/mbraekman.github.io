@@ -87,8 +87,9 @@ Once you are sure BizTalk Server 2010 is using TLS 1.2 – even if you are still
 
 Perhaps before diving into the exception handling, it might come in handy to get a little overview of the TLS handshake protocol that is being used to set up the secure channel in between the client and server. Therefore a schema can be found below, which explains what steps are being performed by both client and server.
 
-
-![TLS Protocol](../images/biztalk-server/biztalk-server-2010-tls-1.2/biztalk-server-2010-tls-1.2-protocol.png)
+<p align="center">
+    <img alt="TLS Protocol" src="../images/biztalk-server/biztalk-server-2010-tls-1.2/biztalk-server-2010-tls-1.2-protocol.png">
+</p>
 
 ### Running into a ‘Could not create SSL/TLS secure channel’-exception
 Rest assured, you are not the only one who is running into a few hiccups while setting up a communication-channel based on TLS1.2 when utilizing BizTalk Server. One of the possible errors you might be getting when actually testing the connection is the one you can read below, which is not quite as elaborate as it could be, or at least not as elaborate as I would have wanted it to be:

@@ -64,10 +64,10 @@ public Microsoft.BizTalk.Message.Interop.IBaseMessage Execute(IPipelineContext p
 ```
 
 ### Conclusion  
-Whenever you need to find out if a backup transport is configured and is being executed, check the context properties for the existence of the context property ‘**BackupEndpointInfo**’, for namespace ‘**http://schemas.microsoft.com/BizTalk/2003/system-properties**’.
+Whenever you need to find out if a backup transport is configured and is being executed, check the context properties for the existence of the context property ‘**BackupEndpointInfo**’, for namespace ‘http://schemas.microsoft.com/BizTalk/2003/system-properties’.
 
 | Available     | Value         | Exaplanation  |
-| ------------- |:-------------:| :-----|
+| ------------- |:------------- | :-----|
 | No            | /             | No backup transport location configured. |
 | Yes           | GUID          | Backup transport location configured, but not being used. |
 | Yes           | Empty         | Backup transport location configured and currently being used. |
