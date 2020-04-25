@@ -7,4 +7,6 @@ Such as:
 
 
 
-[&larr; back](../../index.md)
+---
+
+[&larr; back](../index.md)

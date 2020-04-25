@@ -12,7 +12,9 @@ If such a file is available, I will add a link towards the file in the correspon
 
 
 ## What sections are currently available?
-### [_Azure DevOps_](azure/azure-devops/azure-devops)
-Anything related to Azure DevOps.
+- ### [Azure](azure/index)
+    Anything related to Azure services. _(I know.. this is quite generic, right?!)_
+- ### [BizTalk Server](biztalk-server/index)
+    Since BizTalk Server is not dead _(yet)_!.
 
 
