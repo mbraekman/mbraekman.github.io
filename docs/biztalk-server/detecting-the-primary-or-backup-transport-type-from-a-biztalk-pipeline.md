@@ -30,7 +30,7 @@ In order to have a complete overview of the existence/usage of this property, le
 Note that these properties are sorted alphabetically and **no** ‘_BackupEndpointInfo_’-property is present.  
 So, this means the property is only available when the backup transport is configured and only contains a value if the send port is sending to the main transport location.
 
-## Implementation within custom pipeline component
+### Implementation within custom pipeline component
 
 Since we have figured out what property can be used to check the transport location used, this info can be used to implement our custom pipeline component.  
 The code can be found below, but to summarize, you have to attempt to retrieve the BackupEndpointInfo-property from the context. If the returned object is _NULL_, no backup transport has been configured. If the property is present, you can define based on the value if the actual backup transport is being executed or not.
