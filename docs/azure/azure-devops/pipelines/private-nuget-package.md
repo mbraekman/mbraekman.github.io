@@ -68,4 +68,6 @@ In order to obtain access to the private NuGet package, ensure to add the follow
     </configuration>
     ````
 
-[&larr; back](../azure-devops.md)
+---
+
+[&larr; back](../index.md)
