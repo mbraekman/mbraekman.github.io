@@ -42,9 +42,9 @@ By doing so, you'll notice there is 'Deployment group phase'-step, underneath al
 Something else to keep in mind is that, when it comes to multi-BizTalk server deployments, you need to make sure to select the '**One target at a time**' option, underneath the 'Targets to deploy to in parallel'-functionality.   
 In doing so, this ensures that a deployment to the next machine is only being triggered, if a previous target machine has successfully been updated. If you were to select the 'Multiple'-option, you'll notice the deployments will fail, due to a concurrency-violation on the BizTalk application which is being updated, as can be seen below.
 
-<p style="color:red;border:solid 1px;padding:5px; border-color:black;">
+```
     ##[error]Exception: 'Exception calling "SaveChanges" with "0" argument(s): "Concurrency Violation encountered while Updating the SendPort 'spo_BizTalk.ALM_FILE'. The local, cached version of the BizTalk Server group configuration is out of date. You must refresh the BizTalk Server group configuration before making further changes."'
-</p>
+```
 
 ![Concurrency violation error](../images/biztalk-server/bts2016-fp2-multi-server-cd/concurrency-violation-error.png)
 
