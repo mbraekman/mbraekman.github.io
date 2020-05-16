@@ -212,7 +212,8 @@ The token actually contains the name(s) of the assigned application role(s), whi
 Now that we are able to assign roles to app registrations and make sure these are added into the JWT-token, we can use this information to take care of the authorization from within our API Management.  
 To do this, we can make use of the [validate-jwt](https://docs.microsoft.com/en-us/azure/api-management/api-management-access-restriction-policies#ValidateJWT)-policy.  
 
-Consider below policy to be applied as base-policy, meaning this applies to all operations of this specific API.
+Consider applying below configuration as a base-policy, meaning it will apply to all operations of this specific API.  
+Want to take it even further? Why not add this policy onto a product and make is very easy to apply to multiple API's.  
 
 ```xml
 <policies>
