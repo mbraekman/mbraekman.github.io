@@ -1,6 +1,6 @@
 ## Protect your API's using OAuth2.0 and Azure AD
 
-> Or how service to service communication __can__ make use of JWT-tokens issued and validated by Azure AD.
+> Or how service to service communication __can__ make use of JWT-tokens issued and validated by Azure Active Directory.
 
 When setting up API's often the most difficult part about it, is making them secure but easily configurable.  
 Since we don't want to be modifying the configuration of our API Management policy every time a new partner wants to connect, there is a way to leverage Azure Active Directory application roles for this, providing a manner for you to allow API-access based on these roles.  
@@ -13,6 +13,7 @@ By using the setup described below, you will be able to define both authenticati
 - [Generate JWT-token](#generate-jwt-token)
 - [Add Application Roles](#add-application-roles)
 - [Re-generate JWT-token](#re-generate-jwt-token)
+- [APIM Policy to validate JWT](#apim-policy-to-validate-jwt)
 
 ### Overview
 Before we get started, let's give an overview of how everything will be connected, while making use of OAuth2.0 in combination with the AAD Identity.
@@ -206,6 +207,47 @@ Let's decode the token again and see what that looks like:
 ![API Permissions consent](../../images/azure-apim/s2s-ad-oauth2/request-jwt-token-msft-ad-response-with-approles-decode-jwt.png)
 
 The token actually contains the name(s) of the assigned application role(s), which means that within API Management we can now verify the roles-claim to define which client is authorized to invoke any operation on the API, or even take it a bit further and define which client can invoke which operation within a single API. 
+
+### APIM Policy to validate JWT
+Now that we are able to assign roles to app registrations and make sure these are added into the JWT-token, we can use this information to take care of the authorization from within our API Management.  
+To do this, we can make use of the [validate-jwt](https://docs.microsoft.com/en-us/azure/api-management/api-management-access-restriction-policies#ValidateJWT)-policy.  
+
+Consider below policy to be applied as base-policy, meaning this applies to all operations of this specific API.
+
+```xml
+<policies>
+    <inbound>
+        <base />
+        <!-- validate the JWT-token and verify whether the the required role has been assigned. -->
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized" require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+            <!-- specify the OpenID Connect URL specific to your tenant. -->
+            <openid-config url="https://login.microsoftonline.com/{tenant-ID}/v2.0/.well-known/openid-configuration" />
+            <required-claims>
+                <!-- specify 'any' to be able to add multiple roles. -->
+                <claim name="roles" match="any">
+                    <!-- the value should match the name assigned to the appRole. -->
+                    <value>kb-backend-apis.all</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+```
+
+As mentioned before, the OpenID Connect URL can be located within the *Azure Active Directory* > *App Registrations* > *Endpoints*-overview.  
+While in the claims verification, we can easily add multiple roles by simply specifying the name of each of the application roles we want to grant access.  
+
+Simple, right?!
+
 
 ### Conclusion
 Making use of Azure AD and OAuth2.0 provides a very simple way of allowing new clients to interact with our API as we can simply register a new app registration in Azure AD, assign the appropriate application roles and we are all set. The only thing left would be to provide the client-id and client-secret, along with the required URL's to our new partner.    
