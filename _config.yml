@@ -1,0 +1,48 @@
+# Site settings
+title:            Maxim Braekman
+#email:            your-email@domain.com
+description:      KnowledgeBase Maxim Braekman
+baseurl:          '' # The subpath of your site, e.g. /blog
+imgbaseurl:       './img/' # The subpath of your site, e.g. /blog
+url:              'https://mbraekman.github.io' # The base hostname & protocol for your site
+github_username:  mbraekman
+twitter_username: maxim_braekman
+linkedin_username: maxim-braekman-6a865035
+
+markdown:  kramdown
+permalink: pretty
+paginate:  12
+sass:
+  style: compressed
+
+gems:
+  - jekyll-paginate
+  - jekyll/tagging
+  - [jekyll-paginate]
+  - [jekyll-tagging]
+  
+plugins:
+  - jekyll-seo-tag
+  
+
+include:
+  - _pages
+
+exclude:
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+
+# Tags
+tag_page_dir:         tag
+tag_page_layout:      tag_page
+tag_permalink_style:  pretty
+
+# Pages path
+defaults:
+  - scope:
+      path: '_pages'
+    values:
+      permalink: /:basename:output_ext
+
+      

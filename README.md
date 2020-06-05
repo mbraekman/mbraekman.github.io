@@ -1,4 +1,8 @@
-# KnowledgeBase
-Overall documentation/guidelines
+---
+permalink: /index.html
+---
 
-You can read through the documents by using this link: https://mbraekman.github.io/KnowledgeBase/
+View this blog at https://mbraekman.github.io
+
+
+This has been merged from the KnowledgeBase-repo.

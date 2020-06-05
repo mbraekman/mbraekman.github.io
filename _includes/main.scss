@@ -1,0 +1,70 @@
+// Variables
+@import 'variables/_all';
+
+// Functions
+@import 'functions/_all';
+
+// Base
+@import 'base/_all';
+
+// Components
+@import 'components/_all';
+
+// Navigation
+@import 'navigation/_all';
+
+// Sections
+@import 'sections/_all';
+
+// Helpers
+@import 'helpers/_all';
+
+.highlight pre code{
+	white-space: pre; overflow: auto;
+}
+
+.post-content a{
+	color: #599ab9;
+}
+
+blockquote{
+	color: #7E7E7E;
+}
+
+.language-json .nl{
+	color: #03A9F4;
+}
+
+.language-xml .err{
+	color: #d14;
+	background-color: transparent;
+}
+
+.language-error {
+	color: #d14;
+}
+.table{
+	border-collapse: collapse;
+    border-style: hidden;
+}
+.table-bordered{
+  border: 1px solid black;
+}
+.table-bordered th, .table-bordered td{
+  border: 1px solid black;
+  padding: 5px;
+}
+
+.table-bordered thead tr{
+	background-color:#dedede;
+}
+
+.fa-linkedin {
+    color: #007bb5;
+}
+.fa-linkedin:hover {
+    background-color: #007bb5;
+}
+.icon--ei-sc-linkedin:hover{
+	fill:#0976b4;
+}
