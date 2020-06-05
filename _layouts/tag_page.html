@@ -1,0 +1,69 @@
+---
+layout: default
+---
+
+<div class="wrapper">
+
+  <div class="row">
+    <div class="column large-12">
+
+{% if page.tag %}
+  {% assign sortedtags = page.tag %}
+
+{% else %}
+
+  {% capture tags %}
+	{% for tag in site.tags %}
+		{{ tag[0] | append: ";" }}
+	{% endfor %}
+  {% endcapture %}
+  
+  {% assign sortedtags = tags | split:';' | sort %}
+
+{% endif %}
+
+{% for tag in sortedtags %}
+
+  {% assign trimmedTag = tag | strip_newlines | trim | remove:  "	" | remove: "  " %}
+	{% if trimmedTag != "" %}
+		  <header class="page-header">
+			<div class="box">
+			  <div data-icon="ei-tag" data-size="s" class="box__icon"></div>
+			  <div class="box__body">
+				<h4 id="{{ tag |strip_newlines | trim | remove:  "	"}}" class="box__title">{{tag|strip_newlines | trim | remove:  "	"}}</h4>
+			  </div>
+			</div>
+		  </header>
+  
+	  <!--<div class="row">
+		<div class="post-list">
+		  {% for post in site.tags[trimmedTag] %}
+			{% include post-card.html %}
+		  {% endfor %}
+		</div>
+	  </div>-->
+	  <ul style="list-style-type:none;">
+  {% for post in site.tags[trimmedTag] %}
+    <li class="post-card__title box" style="padding:10px;margin-bottom: 5px;background-color:white;" onMouseOver="this.style.backgroundcolor='white'">
+			<a href="{{ post.url }}" style="text-decoration:none;font-size:17px;">{{ post.title }}</a>
+			<span style="font-size:12px; color:#7E7E7E; float:right;">{{ post.date | date: "%b %-d, %Y" }}</span>
+			<br />
+			<span style="font-size:14px; color:#7E7E7E;">{{ post.description }}</span>
+    </li>
+  {% endfor %}
+</ul>
+
+	  <div class="row">
+		{% include pagination.html %}
+	  </div>
+	  
+	{% endif %}
+{% endfor %}
+
+
+
+
+    </div>
+  </div>
+
+</div>
