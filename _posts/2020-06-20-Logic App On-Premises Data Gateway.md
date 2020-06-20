@@ -14,7 +14,7 @@ In this post, I will not go into details about how to install the on-premises da
 > - 2MB for write-operations.  
 > - 2MB for read-operation requests and an 8MB compressed data response limit.  
 >
-> Before using this service, carefully <a href="https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-onprem#considerations" target="_blank">evaluate</a> whether this is the right option for you use-case.
+> Before using this service, carefully <a href="https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-onprem#considerations" target="_blank">evaluate</a> whether this is the right option for your use-case.
 
 
 ## Topics
