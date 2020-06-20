@@ -24,26 +24,27 @@ Below are some useful links towards official Microsoft documentation regarding t
 #### Things to keep in mind during installation
 
 - Use a **local administrator** account to run the installation of the on-premises data gateway.  
-- Install the OPDG on a machine located within the same network of the resources to access, bit ensure it is **not a domain controller**.  
-*Keep in mind that the closer the service is to local resource, the lower the latency.*
-- By default, the installed service will be executed by a newly created account "NT SERVICE\PBIEgwService".  
-Do not change this, as you might run into (connectivity-)issues when attempting to register the instance in Azure. The only reason to change this to a domain-account would be to resolve authentication issues when using a proxy.  
-- Make sure to use a **work or school account** that is managed from Azure Active Directory to sign in during the installation-proces.  
-A personal Microsoft-account will only grant you access to consumer-based services, such as Outlook, OneDrive, Xbox,... as you can read over [here](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/sign-up-organization).
+- Install the OPDG on a machine located within the same network of the resources to access, but ensure it is **not a domain controller**.  
+*Keep in mind that the closer the service is located to the local resource, the lower the latency.*
+- By default, the installed service will be run-as a newly created account "NT SERVICE\PBIEgwService".  
+Do not change this, as you might run into (connectivity-)issues when attempting to register the instance in Azure.  
+The only reason you might actually need to change this to a domain-account would be to resolve authentication issues when using a proxy.  
+- Make sure to use a **work or school account** that is managed from Azure Active Directory to sign in during the installation-process.  
+*A personal Microsoft-account will only grant you access to consumer-based services, such as Outlook, OneDrive, Xbox Live,... as you can read over [here](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/sign-up-organization).*
 - Think about the region you select during the installation process, as you'll have to select **the same region** when registering the instance in Azure.  
-- Assign a name to your OPDG-service that is unique across your AD tenant.
+- The name assigned to your OPDG-service should be unique across your AD tenant.
 - Log into the Azure portal using the **same AAD-account** in order to register the OPDG-instance in an Azure subscription.  
 You will not be able to register - *or even see* - the instance when using a different account.  
 - As of the release of June 2019, the service is set to use the **HTTPS**-protocol by default in order to communicate with Azure Service Bus.  
 Want to make sure the TCP-protocol is used instead? Have a look at the following [documentation](https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-communication#force-https-communication-with-azure-service-bus).
-- While the OPDG doesn't require you to open up any inbound ports in your firewall, it does require some outbound ports to be opened up.
-To get an overview of these ports, you can check the following [documentation](https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-communication#:~:text=Ports).
+- While the OPDG doesn't require you to open up any inbound ports in your firewall, it does require some outbound ports to be opened up.  
+To get an overview of these ports, check the following [documentation](https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-communication#:~:text=Ports).
 
 
 #### Where to find the logs
 
 Whether you are experiencing issues during installation or when attempting to access local resources, the first location to start looking for clues would be the logs.  
-Here is where you can find those logs:  
+Here is where you can find these logs:  
 - In the on-premises data gateway app, select **Diagnostics** and then select the **Export logs** link.  
 The log-files will be saved to the ODGLogs folder on your server in .zip format.  
 - Check the **Event Viewer** on the server that has the OPDG-service installed, navigate to **Applications and Services Logs** and select **On-premises data gateway service**.  
