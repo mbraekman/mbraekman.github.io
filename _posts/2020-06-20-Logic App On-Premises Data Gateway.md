@@ -70,10 +70,10 @@ While at first glance this seems to be something trivial, it is in fact a very u
 Before this feature was made available whenever you wanted to separate your resources into different subscriptions based on the environment and if these resources required access to on-premises resources, you were required to install 1 on-premises data gateway per environment, as you can only register each on-prem gateway once in Azure.  
 This also meant that, since you can only install a single gateway per machine, you were required to have at least 1 server, whether this was physical or virtual didn't matter, per environment, even if all of those were pointing towards the same resource, e.g. a file-share.  
 
-With this feature this is no longer required. Simply install an on-premises data gateway onto a server within your network, register it within 1 of your Azure subscriptions and you will be able to connect from all your subscriptions.  
+With this feature this is no longer required. Simply install an on-premises data gateway onto a server within your network, register it within 1 of your Azure subscriptions and you will be able to connect from all your subscriptions within the same tenant.  
 Or, at least, you should be able to connect.  
 
-If you want to create a new ApiConnection from the designer view, you will be able to select your registered gateway from any of the subscriptions available to you.  
+If you want to create a new ApiConnection from the designer view, you will be able to select your registered gateway from any of the subscriptions available to you, within the same tenant.  
 ![Support on multiple subscriptions](../../../../img/posts/azure-logic-app-on-premises-data-gateway/new-api-connection-multiple-subscriptions.png)  
 
 However, if you've registered the on-premises data gateway within a subscription that hasn't been used for anything else yet, you might run into the following error-message when attempting to create an ApiConnection:
