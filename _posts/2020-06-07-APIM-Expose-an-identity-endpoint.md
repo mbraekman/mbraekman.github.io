@@ -66,7 +66,7 @@ Have a look at below policy to see this can be achieved.
     <inbound>
         <!-- Set the URL for the AAD OAuth v2.0 token endpoint. -->
         <set-backend-service base-url="https://login.microsoftonline.com" />
-        <rewrite-uri template="/{{AD-OAuth-Tenant-Id}}/oauth2/v2.0/token" copy-unmatched-params="false" />
+        <rewrite-uri template="/{{{AD-OAuth-Tenant-Id}}}/oauth2/v2.0/token" copy-unmatched-params="false" />
         <!-- Specify the method -->
         <set-method>POST</set-method>
         <!-- Explicitly set the Content-Type header -->
@@ -81,7 +81,7 @@ Have a look at below policy to see this can be achieved.
             string client_id = "";
             string client_secret = "";
             // set the scope and grant_type to be used
-            string scope = "https://{{Gateway-Name}}.azure-api.net/oauth2/.default";
+            string scope = "https://{{{Gateway-Name}}}.azure-api.net/oauth2/.default";
             string grant_type = "client_credentials";
             for(int propertyPosition = 0;propertyPosition < requestProperties.Count();propertyPosition++) //>
             {
