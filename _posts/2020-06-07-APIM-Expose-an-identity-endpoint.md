@@ -60,13 +60,13 @@ By including this endpoint in API Management, we can limit the amount of informa
 
 This does require us to build up the actual body before forwarding the request to the AAD-endpoint.
 Have a look at below policy to see this can be achieved.
-
+{% raw %}
 ```xml
 <policies>
     <inbound>
         <!-- Set the URL for the AAD OAuth v2.0 token endpoint. -->
         <set-backend-service base-url="https://login.microsoftonline.com" />
-        <rewrite-uri template="/{{{AD-OAuth-Tenant-Id}}}/oauth2/v2.0/token" copy-unmatched-params="false" />
+        <rewrite-uri template="/{{AD-OAuth-Tenant-Id}}/oauth2/v2.0/token" copy-unmatched-params="false" />
         <!-- Specify the method -->
         <set-method>POST</set-method>
         <!-- Explicitly set the Content-Type header -->
@@ -81,7 +81,7 @@ Have a look at below policy to see this can be achieved.
             string client_id = "";
             string client_secret = "";
             // set the scope and grant_type to be used
-            string scope = "https://{{{Gateway-Name}}}.azure-api.net/oauth2/.default";
+            string scope = "https://{{Gateway-Name}}.azure-api.net/oauth2/.default";
             string grant_type = "client_credentials";
             for(int propertyPosition = 0;propertyPosition < requestProperties.Count();propertyPosition++) //>
             {
@@ -128,7 +128,7 @@ Have a look at below policy to see this can be achieved.
     </on-error>
 </policies>
 ```  
- 
+ {% endraw %}
 As you can read in the comments of the policy, you need to handle the error-response yourself. If you wouldn't, the error returned to the caller would be:
 - *400 Bad Request*  
     In case the provided client_id is unknown to AAD.  
