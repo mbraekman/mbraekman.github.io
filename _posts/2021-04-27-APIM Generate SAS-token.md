@@ -1,13 +1,13 @@
 ---
 layout: post
 author: Maxim Braekman
-title: Generate a SAS-token from within an APIM policy
+title: Generate a SAS token from within an APIM policy
 description: Allow users to request access to a specific file on an Azure Storage Account, while staying in full control.
 image: ./img/apim-generate-sas-token.jpg
 tags: [API Management, Security]
 ---
 
-When you want to expose files stored on an Azure Storage Account, you typically wouldn't want to open up your entire container to the public, while granting access to specific users.  
+When you want to expose files stored on an Azure Storage Account, you typically don't want to grant access to the entire container.  
 
 One of the options is to generate a _Secure Access Signature_ (SAS) which grants access to a specific blob for a certain amount of time. But, you don't want to be generating these yourselves. So, why not use Azure API Management to host - _and secure_ - an API which can generate these tokens upon request.   
 
@@ -21,19 +21,19 @@ One of the options is to generate a _Secure Access Signature_ (SAS) which grants
 
 
 ### Overview
-Let's start off with a high-level overview of how such a setup would look like and how this affects the flow of requests/responses.
+Let's start with a high-level overview of how such a setup would look like and how this affects the flow of requests/responses.
 
 [![High level overview](../../../../img/posts/azure-apim-generate-sas-token/high-level-overview.png)  ](../../../../img/posts/azure-apim-generate-sas-token/high-level-overview.png) 
 
-As you can see, by using API Management you will be in full control of how clients have to authenticate and/or authorize, to ensure SAS-tokens are being granted to those who absolutely deserve it. While this requires some additional setup from your end, no-one will need to bother you anymore for generating a new SAS-token to access one of your files.  
+As you can see, by using API Management you will be in full control of how clients have to authenticate/authorize, to ensure SAS-tokens are only being granted to those who deserve it. While this requires some additional setup from your end, no one will need to bother you anymore for generating a new SAS token to access one of your files.  
 _Automate all the things!_
 
 ### Create a new API
 As you can see in the overview, the API that is going to be used in this setup does not have any _real_ backend. This means all of the magic will be done from within the policies, without requiring you to manage an additional app service/container/...
 
-In order to give you a complete overview of how this type of API can be created, we'll go step-by-step through the entire process.
+To give you a complete overview of how this type of API can be created, we'll go step-by-step through the entire process.
 
-Because of this, we've created a new *blank API* within our API Management instance, specifically to host this expose/storage-endpoint.
+To get started, we've created a new *blank API* within our API Management instance, specifically to host this storage endpoint.
 
 ![Blank API](../../../../img/posts/azure-apim-generate-sas-token/apim-blank-api-no-operations.png)
 
@@ -42,7 +42,7 @@ Now we have an API, it's time to add the _/generate/sas/{containerName}/{blobNam
 
 ![Create a new endpoint](../../../../img/posts/azure-apim-generate-sas-token/create-new-generate-blob-sas-endpoint.png)
 
-Since the client will need to be able to provide the name of the blob and the name of the container in which the blob is located, the following template-parameters have to be added.  
+Since the client will need to be able to provide the name of the blob and the name of the container in which the blob is located, the following template parameters have to be added.  
 
 ![Endpoint query parameters](../../../../img/posts/azure-apim-generate-sas-token/create-new-generate-blob-sas-endpoint-template-parameters.png)  
 
@@ -52,19 +52,19 @@ While we’re at it, let’s also set the possible response-codes along with a s
 - *401 Unauthorized*  
 ![Return SAS token unauthorized](../../../../img/posts/azure-apim-generate-sas-token/create-new-generate-blob-sas-endpoint-response-401.png)
 
-Once saved, the new endpoint has been created and is ready to be consumed, however as long as we haven't specified any policies, nothing usefull will be returned.  
+Once saved, the new endpoint has been created and is ready to be consumed, however as long as we haven't specified any policies, it will not return anything useful.  
 [![Set new endpoint request info](../../../../img/posts/azure-apim-generate-sas-token/create-new-generate-blob-sas-endpoint-completed.png)](../../../../img/posts/azure-apim-generate-sas-token/create-new-generate-blob-sas-endpoint-completed.png)  
 
 ### Set the policy
 
 Now that the _infrastructure_ has been set, it's time to dive into the policy.  
-As you will notice, we're using some inline C# here and there to create the signatures, which make up part of the SAS-token, as well as to build up the SAS-token and URL to be used by the client.
+As you will notice, we're going to be using some inline C# here and there to create the signatures, which make up part of the SAS token.
 
-Before you go to the policy-editor, we will need to store the following values in a _Named Value_ within API Management:
+Before you go to the policy editor, we will need to store the following values in a _Named Value_ within API Management:
 - _KB-Storage-Account:_  
     The name of the storage account where the blobs are located.
 - _KB-Storage-Account-AccessKey:_  
-    An accesskey to be used within the creation of the signature.
+    An access key to be used within the creation of the signature.
 
 Let's go through each of the steps that are going to be performed by the policy, in order to make it clear what everything is doing.
 - Extract the parameters from the request:
@@ -76,7 +76,7 @@ Let's go through each of the steps that are going to be performed by the policy,
     ```  
     {% endraw %}
 
-- Next, we need to initialize a set of variables that will be used for the creation of the SAS-token.  
+- Next, we need to initialize a set of variables that will be used for the creation of the SAS token.  
     You will notice that next to the expiration time (in seconds) we will also set the protocol to be used, the version of the storage account API, as well as the full name of the blob.  
     Some properties, such as signedIp, signedIdentifier, rscc _(Cache-Control)_, rscd _(Content-Disposition)_, rsce _(Content-Encoding)_, rscl _(Content-Language)_ and rsct _(Content-Type)_ will remain empty in our example but could easily be provided for different scenarios.  
     More details on these properties can be found [here](https://docs.microsoft.com/en-us/rest/api/storageservices/create-service-sas#construct-a-service-sas).
@@ -181,7 +181,7 @@ Let's go through each of the steps that are going to be performed by the policy,
 
 - But wait!  
     We've just generated a SAS-token, without verifying the existence of the file.  
-    Let's attempt to retrieve the metadata of the file, to verify it really exists.
+    Let's attempt to retrieve the metadata of the file, to verify it exists.
 
     {% raw %}
     ```xml
@@ -202,14 +202,14 @@ Let's go through each of the steps that are going to be performed by the policy,
     ```  
     {% endraw %}
 
-- Based on the response of the metadata-call, return the SAS-token or return a "NotFound"-exception.  
+- Based on the response of the metadata call, return the SAS token or return a "NotFound"-exception.  
  
     {% raw %}
     ```xml
     <choose>
         <!-- Check active property in response -->
         <when condition="@(((IResponse)context.Variables["blobMetadata"]).StatusCode == 404)">
-            <!-- Return 401 Unauthorized with http-problem payload -->
+            <!-- Return 404 Not Found with http-problem payload -->
             <return-response>
                 <set-status code="404" reason="Not Found" />
                 <set-header name="Content-Type" exists-action="override">
@@ -247,22 +247,22 @@ Let's go through each of the steps that are going to be performed by the policy,
     ```  
     {% endraw %}
 
-If you want to see the entire policy, instead of the snippets, scroll down or click [here](#full-policy).
+_If you want to see the entire policy, instead of the snippets, scroll down or click [here](#full-policy)._
 
 ### Try it out!
 Once everything has been saved, we can use Postman to build the request and retrieve a token.  
-If we first provide a wrong file-name, we should now receive a "404 NotFound"-exception.  
+If we first provide a wrong file name, we should now receive a "404 Not Found"-exception.  
 
 [![Postman - Not Found](../../../../img/posts/azure-apim-generate-sas-token/postman-unexisting-file.png)](../../../../img/posts/azure-apim-generate-sas-token/postman-unexisting-file.png)  
 
-If we now provide a valid file-name, we should receive a "200 OK"-response, along with the URL grant us access to the file.  
+If we now provide a valid file name, we should receive a "200 OK"-response, along with the URL grant us access to the file.  
 
 [![Postman - Not Found](../../../../img/posts/azure-apim-generate-sas-token/postman-existing-blob.png)](../../../../img/posts/azure-apim-generate-sas-token/postman-existing-blob.png)  
 
 
 ### Conclusion
-By making use of API Management and the policy-capabilities it is possible to create an API that allows clients to request SAS-tokens on the fly.  
-Next to saving you some time as you don't have to generate these tokens yourself, you will also get additional logging within Application Insights, allowing you to see whom is accessing what. 
+By making use of API Management and the policy capabilities it is possible to create an API that allows clients to request SAS-tokens on the fly.  
+Next to saving you some time as you don't have to generate these tokens yourself, you will also get additional logging within Application Insights, allowing you to see who is accessing what. 
 
 
 
@@ -370,7 +370,7 @@ The full policy will look like this:
         <choose>
             <!-- Check active property in response -->
             <when condition="@(((IResponse)context.Variables["blobMetadata"]).StatusCode == 404)">
-                <!-- Return 401 Unauthorized with http-problem payload -->
+                <!-- Return 404 Not Found with http-problem payload -->
                 <return-response>
                     <set-status code="404" reason="Not Found" />
                     <set-header name="Content-Type" exists-action="override">
