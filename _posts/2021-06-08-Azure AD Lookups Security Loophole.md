@@ -9,7 +9,7 @@ tags: [Azure AD, Security]
 
 When you are lacking sufficient access rights to read Azure AD, there are workarounds you can use (*Azure CLI/PowerShell/..*) to make modifications to users/service principals/.., considering you can provide the correct objectId's.
 
-Obtaining these IDs can be difficult without read-access to Azure AD, however, using the proper PowerShell commands you will be able to obtain these values even when you are lacking said access. 
+Obtaining these IDs can be difficult without read-access to Azure AD. However, using the proper PowerShell commands you will be able to obtain these values even when you are lacking said access. 
 
 ## Steps
 - [Getting Started](#getting-started)
@@ -24,6 +24,7 @@ This can be done by using the following:
 Connect-AzureAD
 ```  
   
+  <br />
 ### Retrieve App Registration Info
 The following command would normally allow you to retrieve the objectId/applicationId for an app registration:  
 
@@ -71,8 +72,10 @@ This will, as is the case for the app registration command, an exception indicat
 - HttpStatusDescription: Forbidden
 - HttpResponseStatus: Completed
 ```  
+  <br />
 
-**But**, as was the case before, here you can also use the same command with the different parameter, which will get you the required objectId/applicationId as a response instead.  
+
+But also in this situation, you can use the same command with a different parameter, which will get you the requested objectId/applicationId as a response instead.  
 
 ```powershell
 Get-AzureADServicePrincipal -Filter "DisplayName eq 'app-registration-name'"
