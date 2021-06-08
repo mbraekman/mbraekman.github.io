@@ -7,9 +7,9 @@ image: ./img/azure-ad-lookup-loophole.jpg
 tags: [Azure AD, Security]
 ---
 
-When you are lacking sufficient access rights to read Azure AD, there are workarounds you can use (Azure CLI/PowerShell/..) to assign roles to users/service principals, considering you are able to provide the correct objectId's.
+When you are lacking sufficient access rights to read Azure AD, there are workarounds you can use (*Azure CLI/PowerShell/..*) to make modifications to users/service principals/.., considering you can provide the correct objectId's.
 
-Obtaining these IDs can be difficult without read-access to Azure AD, however, there are some PowerShell commands you could use to obtain these values. 
+Obtaining these IDs can be difficult without read-access to Azure AD, however, using the proper PowerShell commands you will be able to obtain these values even when you are lacking said access. 
 
 ## Steps
 - [Getting Started](#getting-started)
@@ -18,20 +18,20 @@ Obtaining these IDs can be difficult without read-access to Azure AD, however, t
 - [Conclusion](#conclusion)
 
 ### Getting Started
-***Note**: before using the below commands, make sure to connect to Azure AD via:*  
-
+Before you can use any of the PowerShell commands mentioned below, you will have to make sure you are connected to Azure AD.  
+This can be done by using the following:  
 ```powershell
 Connect-AzureAD
-```
-
+```  
+  
 ### Retrieve App Registration Info
-The following commands would allow you to retrieve the objectId/applicationId for an app registration:  
+The following command would normally allow you to retrieve the objectId/applicationId for an app registration:  
 
 ```powershell
 Get-AzureADApplication -SearchString 'app-registration-name'
 ```
 
-However, when executing this command, without you having sufficient access to Azure AD, you will be getting the following exception:  
+However, when executing this command without having sufficient access to Azure AD, you will be getting the following exception:  
 ```diff
 - Get-AzureADApplication: Error occurred while executing GetApplications
 - Code: Authorization_RequestDenied
@@ -41,26 +41,26 @@ However, when executing this command, without you having sufficient access to Az
 - HttpStatusCode: Forbidden
 - HttpStatusDescription: Forbidden
 - HttpResponseStatus: Completed
-```
+```  
 
-**But**, when you would use the same command, with the following parameter, you'll see that instead of getting an exception you will get the required objectId/applicationId as a response instead.
+**But**, when you would use the same command with the `Filter`-parameter , you will see that instead of getting an exception you will get the requested objectId/applicationId as a response instead.
 
 ```powershell
 Get-AzureADApplication -Filter "DisplayName eq 'app-registration-name'"
-```
+```  
 
-![Lookup App Registration Info](../../../../img/posts/azure-ad-lookup-loophole/lookup-app-registration-info.png)
+![Lookup App Registration Info](../../../../img/posts/azure-ad-lookup-loophole/lookup-app-registration-info.png)  
 
 
 ### Retrieve Service Principal info
 The Service Principal can normally be found underneath the Enterprise Applications in Azure AD, which is linked to an app registration.
-In order to retrieve this information, you can also use 2 versions of the same command:
+To retrieve this information, you can also use 2 versions of the same command:
 
 ```powershell
 Get-AzureADServicePrincipal -SearchString 'app-registration-name'
-```
+```  
 
-This will, as is the case for the app registration command, an exception indicating you are lacking sufficient access rights:
+This will, as is the case for the app registration command, an exception indicating you are lacking sufficient access rights:  
 ```diff
 - Get-AzureADServicePrincipal: Error occurred while executing GetServicePrincipals
 - Code: Authorization_RequestDenied
@@ -70,19 +70,19 @@ This will, as is the case for the app registration command, an exception indicat
 - HttpStatusCode: Forbidden
 - HttpStatusDescription: Forbidden
 - HttpResponseStatus: Completed
-```
+```  
 
-**But**, as was the case before, also here you can use the same command with the different parameter, which will get you the required objectId/applicationId as a response instead.
+**But**, as was the case before, here you can also use the same command with the different parameter, which will get you the required objectId/applicationId as a response instead.  
 
 ```powershell
 Get-AzureADServicePrincipal -Filter "DisplayName eq 'app-registration-name'"
-```
+```  
 
-![Lookup Service Principal Info](../../../../img/posts/azure-ad-lookup-loophole/lookup-service-principal-info.png)
+![Lookup Service Principal Info](../../../../img/posts/azure-ad-lookup-loophole/lookup-service-principal-info.png)  
 
-Now you might be wondering, what is the difference between these 2 commands.
-It's quite straightforward really, by specifying the exact field you wish to query in the `Filter`-parameter, you're narrowing down the amount of information you need to have access to. Since the DisplayName is normally something that you will always be able to read, this will work as that is the only field that is being queried.
-If you're using the `SearchString`-parameter, the command is not limiting its search-action to the DisplayName, but also looks at all other properties in the app/enterprise application. When trying to read some of the properties you don't have access to, it simply throws the mentioned exception, preventing you even from reading those values that are accessible to you.
+Now you might be wondering, what is the difference between these 2 commands.  
+It's quite straightforward, by specifying the exact field you wish to query in the `Filter`-parameter, you're narrowing down the amount of information you need to have access to. Since the DisplayName is normally something that you will always be able to read, this will work as that is the only field that is being queried.  
+If you're using the `SearchString`-parameter, the command is not limiting its search-action to the DisplayName, but also looks at all other properties in the app/enterprise application. When trying to read some of the properties you don't have access to, it simply throws the mentioned exception, preventing you even from reading those values that are accessible to you.  
 
 ### Conclusion
 If you think there is no way for you to continue without waiting for a response from the Infra-team, providing the objectId/applicationId of the Service Principal before you can set up the proper roles, it is always good to have a look at the other parameters which have been made available.
