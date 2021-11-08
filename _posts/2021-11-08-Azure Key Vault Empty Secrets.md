@@ -4,7 +4,7 @@ author: Maxim Braekman
 title: Azure Key Vault - Empty Secrets
 description: You might require the use of an empty secret in Azure Key Vault. But that isn't possible, or is it?!
 image: ./img/azure-key-vault-empty-secret.jpg
-tags: [Azure Key Vault, PowerShell, Security]
+tags: [Azure Key Vault, Security]
 ---
 
 Sometimes you would like to create an empty secret in Azure Key Vault, just so you would be able to optimize your ARM/Bicep files to support multiple authentication types, for example.  
