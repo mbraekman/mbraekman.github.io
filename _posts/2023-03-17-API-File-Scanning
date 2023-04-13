@@ -40,6 +40,7 @@ services:
 
 But how do you communicate with the container instance version of the anti-virus scanner? The nClam NuGet Package handles most of the work for you. All you need to do is specify the hostname (or private IP-address when using a vnet) and port number, which is why the docker-compose file includes port mapping.
 
+
 The code snippet below demonstrates how to use the ClamAV client to scan uploaded files for viruses. Simply create a new _ClamClient_ object by providing the hostname and port number, use the _SendAndScanFileAsync_-method to scan the file content, and wait for the result. If a virus is detected, you can handle it accordingly, in this case I'm merely returning a custom object included the results of the scan.
 
 ```csharp
