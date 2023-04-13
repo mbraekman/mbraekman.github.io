@@ -8,7 +8,7 @@ tags: [API Development, Security, Bicep]
 ---
 
 Security should always be a top priority when designing and developing applications that interact with the internet.
-One important security measure is ensuring that files which are being uploaded to your application do not contain viruses or malware that could harm your system or other users.
+One important security measure is ensuring that files that are being uploaded to your application do not contain viruses or malware that could harm your system or other users.
 In this article, we'll explore how to use ClamAV to validate the content of uploaded files, including how to set up and run a ClamAV instance in a Docker container and how to customize it for your needs.
 
 ## Steps
@@ -38,10 +38,10 @@ services:
       - '3310:3310'
 ```
 
-But how do you communicate with the container instance version of the anti-virus scanner? The nClam NuGet Package handles most of the work for you. All you need to do is specify the hostname (or private IP-address when using a vnet) and port number, which is why the docker-compose file includes port mapping.
+But how do you communicate with the container instance version of the anti-virus scanner? The nClam NuGet Package handles most of the work for you. All you need to do is specify the hostname (or private IP address when using a VNET) and port number, which is why the docker-compose file includes port mapping.
 
 
-The code snippet below demonstrates how to use the ClamAV client to scan uploaded files for viruses. Simply create a new _ClamClient_ object by providing the hostname and port number, use the _SendAndScanFileAsync_-method to scan the file content, and wait for the result. If a virus is detected, you can handle it accordingly, in this case I'm merely returning a custom object included the results of the scan.
+The code snippet below demonstrates how to use the ClamAV client to scan uploaded files for viruses. Simply create a new _ClamClient_ object by providing the hostname and port number, use the _SendAndScanFileAsync_-method to scan the file content, and wait for the result. If a virus is detected, you can handle it accordingly, in this case, I'm merely returning a custom object including the results of the scan.
 
 ```csharp
 var clamClient = new ClamClient(_fileScannerSettings.HostName, _fileScannerSettings.PortNumber);
@@ -67,8 +67,9 @@ return new ScanResult()
 };
 ```
 
+
 ## Automated Deployment
-Once you are ready to have everything running in Azure, you will definitely want to include the setup of the Azure Container Instance as part of your automated deployements.
+Once you are ready to have everything running in Azure, you will want to include the setup of the Azure Container Instance as part of your automated deployments.
 To achieve this, you can utilize the provided Bicep file to create the container instance and have it linked to the container image mentioned earlier.
 
 ```bicep
@@ -118,7 +119,7 @@ resource containerInstanceAv 'Microsoft.ContainerInstance/containerGroups@2021-0
 
 
 ## Custom Configuration
-One thing to keep in mind though, is that the ClamAV container has a default file size limit of 25MB. However, you can increase this limit by creating a custom clamd.conf file and increasing the StreamMaxLength-value. For example, if you want to set the file size limit to 1GB, you will have to set the value to 1000M.
+One thing to keep in mind though is that the ClamAV container has a default file size limit of 25MB. However, you can increase this limit by creating a custom clamd.conf file and increasing the StreamMaxLength-value. For example, if you want to set the file size limit to 1GB, you will have to set the value to 1000M.
 
 To import the custom configuration file into the container, you can mount a custom file share (Storage Account) that requires a Shared Key for access. Once this volume has been mounted, set the CLAMD_CONF_FILE environment variable to point to the custom configuration file on the mounted file share.
 
@@ -140,7 +141,7 @@ services:
 ```
 
 Of course, adding a custom configuration file and mounting a file share should also be part of your automated deployment process.
-In order to achieve this you can use the deploymentScript-resource type to upload the file onto the Storage Account, before triggering the creation of the container instance.
+To achieve this you can use the deploymentScript-resource type to upload the file onto the Storage Account, before triggering the creation of the container instance.
 
 ```bicep
 param global object
