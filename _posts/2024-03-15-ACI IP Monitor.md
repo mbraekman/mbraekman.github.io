@@ -14,6 +14,7 @@ Join us as we unravel the mysteries of maintaining a clear sky in your Azure Con
 - [Getting Started](#getting-started)
 - [Sidecar Pattern](#sidecar-pattern)
 - [Creating the Container image](#creating-the-container-image)
+- [Good to know](#good-to-know)
 - [Conclusion](#conclusion)
 
 ## Getting Started
@@ -21,7 +22,7 @@ Join us as we unravel the mysteries of maintaining a clear sky in your Azure Con
 When you have small workloads that are to be hosted in Azure but are not supported by Azure App Services or Functions, Azure Container Instances could offer a good light-weight solution to have these applications up and running in no time without requiring you to run a full-blown Kubernetes cluster, which, in 95% of the cases, is just pure overkill. A container instance, which is hosting a single container image, is grouped into a container group (what's in a name), which, by default, is publicly accessible and can be addressed by either its IP address or a custom DNS label. However, if you need to have a more secure setup and thus require this container group to become a member of a virtual network, then this option to make use of a custom DNS label is not (yet) supported, and the only way to communicate with the instance is by its IP address.  
 In most cases, for weeks or even months in a row, this can run without any hiccups. App Services or Functions are connecting with the application you have running in a container; the sun is shining and birds are singing; in short, life is good.  
 But sometimes, clouds are inbound, bringing along all kinds of bugs (or features).  
-Whatever the reason, it could be a power outage in the Microsoft data center running your services or simply a scheduled maintenance operation. Servers can be rebooted, running images can be moved around, and from an SLA perspective, there's not a single reason why this would impact the SLA of your services.
+Whatever the reason, it could be a power outage in the Microsoft data center running your services or simply a scheduled maintenance operation. Servers can be rebooted, running images can be moved around, and from an SLA perspective, there's not a single reason why this would impact the SLA of your services.  
 Well, it doesn't, unless you have a VNET-enabled Azure Container Instance running, which is only accessible by calling it by its IP address, and all of a sudden this IP address changes.  
 
 In this situation, you will find out — probably a bit too late — that all connections have been dropped between your App Services, Functions,... and the container instance.  
@@ -44,7 +45,7 @@ In our specific situation, we do not require any communication between the main 
 
 ## Checking the IP address
 
-There are a couple of ways you could do this, for example by using bash to fetch the IP address by using the ifconfig command:
+There are a couple of ways you could do this, for example by using bash to fetch the IP address by using the ifconfig command:  
 ```bash
 IPaddresses=$(ifconfig | grep 'inet addr:10')
 echo "${IPaddresses/'inet addr:'/}" | sed -e 's/^[[:space:]]*//' | cut -d' ' -f1
@@ -54,7 +55,7 @@ echo "${IPaddresses/'inet addr:'/}" | sed -e 's/^[[:space:]]*//' | cut -d' ' -f1
 Another way to do this, and this is the route we took, is to use AZ CLI to fetch the IP address, followed by updating the value stored in KeyVault, which was used as the configuration feed for multiple app services already. Another benefit of using AZ CLI is that we can use a role assignment to grant access for this container instance to upsert the secrets in KeyVault, so we don't need to store or provide any credentials to the container configuration.  
 Within our App Services or Functions, we of course made sure that we specified a ReloadInterval that was small enough to quickly catch any changes in the secret values upon registering KeyVault.  
 
-Which resulted in the following setup:
+Which resulted in the following setup:  
 ![IPMonitor Sidecar](../../../../img/posts/aci-ip-monitor/ContainerInstance-IpMonitor-Sidecar.png)
 
 As mentioned before, we chose to go for the bash-script approach in combination with AZ CLI, as this offers us the possibility to keep it rather simple to maintain yet provide all required functionality, and it allows us to use MSI to authenticate against KeyVault to update any secrets. Of course, all of its information, like the names of the KeyVault, the secret, the container instance, and the resource group, are fed to this script via the environment variables.  
@@ -88,12 +89,12 @@ do
 done
 ```
 
-So, what exactly does this script do? A short recap:
-- Authentication against AZ CLI, using managed identity
-- Call the check_ip function every minute
-- Check the current IP address of the container instance
-- Compare this with the currently stored IP address in KeyVault
-- Update the secret if the IP address has been changed
+So, what exactly does this script do? A short recap:  
+- Authentication against AZ CLI, using managed identity  
+- Call the check_ip function every minute  
+- Check the current IP address of the container instance  
+- Compare this with the currently stored IP address in KeyVault  
+- Update the secret if the IP address has been changed  
 
 ## Creating the Container Image
 
@@ -205,7 +206,12 @@ What does this require when running it inside an Azure Container Instance?
 - The container instance should be granted the "Key Vault Secrets Officer" role on the shared KeyVault instance for it to be able to read and update secrets.  
 - The container instance should be granted the "Reader" role on itself. It seems like this needs to be explicitly set; otherwise, it is not allowed to request its information using the AZ CLI.  
 
+## Good to know
+Another, little less lightweight solution, could be to make use of Azure Container Apps set to an internal accessibility level.  
+In this setup, all container apps hosted within the Azure Container Apps Environment are only accessibly to services added to any other subnet within the same virtual network. However, this approach offers the advantage of using the Fully Qualified Domain Name (FQDN) instead of an IP address for communication, eliminating the need for setting up a sidecar, as describes above.  
+This can simplify the configuration and management of your containerized applications while providing enhanced accessibility within the virtual network environment.  
+Depending on your overall needs, you could stick to the simple, lightweight, cheaper option of Azure Container Instances, including a sidecar to monitor any IP changes, or opt for the more advanced Azure Container Apps in case you have more complex requirements.  
 
 ## Conclusion
 Want to be sure that you're catching the change in IP addresses of a container instance that is running within a virtual network?  
-The easiest way to do this is to leverage the sidecar pattern and use a bash script to fetch the IP address. This is easy to reuse on any other container instance you'll be setting up within your subscription without having to do any additional development.
+The easiest way to do this is to leverage the sidecar pattern and use a bash script to fetch the IP address. This is easy to reuse on any other container instance you'll be setting up within your subscription without having to do any additional development.  
