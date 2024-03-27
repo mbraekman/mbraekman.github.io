@@ -7,12 +7,13 @@ image: ./img/aci-ip-monitor.jpg
 tags: [Containers, Architecture, Bicep]
 ---
 
-Dive into the hidden challenges of running secure applications in Azure Container Instances, where the sun shines on seamless connections until unexpected clouds bring server reboots and IP address changes. Imagine a scenario where your VNET-enabled container instance becomes a crucial piece, accessible only by its elusive IP address. Discover the thrill of finding connections being dropped between your App Services and/or Functions, leaving you to ponder the 'when' and 'how often' of this enigma. While quick fixes may bring temporary relief, our journey takes a turn towards a fool-proof solution — the intriguing 'sidecar pattern'.  
+Dive into the hidden challenges of running secure applications in Azure Container Instances, where the sun shines on seamless connections until unexpected clouds bring server reboots and IP address changes. Imagine a scenario where your VNET-enabled container instance becomes a crucial piece, accessible only by its elusive IP address. Discover the thrill of finding connections being dropped between your App Services and/or Functions, leaving you to ponder the 'when' and 'how often' of this enigma. While quick fixes may bring temporary relief, our journey takes a turn towards a foolproof solution — the intriguing 'sidecar pattern'.  
 Join us as we unravel the mysteries of maintaining a clear sky in your Azure Container Instances journey.  
 
 ## Steps
 - [Getting Started](#getting-started)
 - [Sidecar Pattern](#sidecar-pattern)
+- [Checking the IP address] (#checking-the-ip-address)
 - [Creating the Container image](#creating-the-container-image)
 - [Good to know](#good-to-know)
 - [Conclusion](#conclusion)
@@ -20,18 +21,18 @@ Join us as we unravel the mysteries of maintaining a clear sky in your Azure Con
 ## Getting Started
 
 When you have small workloads that are to be hosted in Azure but are not supported by Azure App Services or Functions, Azure Container Instances could offer a good light-weight solution to have these applications up and running in no time without requiring you to run a full-blown Kubernetes cluster, which, in 95% of the cases, is just pure overkill. A container instance, which is hosting a single container image, is grouped into a container group (what's in a name), which, by default, is publicly accessible and can be addressed by either its IP address or a custom DNS label. However, if you need to have a more secure setup and thus require this container group to become a member of a virtual network, then this option to make use of a custom DNS label is not (yet) supported, and the only way to communicate with the instance is by its IP address.  
-In most cases, for weeks or even months in a row, this can run without any hiccups. App Services or Functions are connecting with the application you have running in a container; the sun is shining and birds are singing; in short, life is good.  
+In most cases, for weeks or even months in a row, this can run without any hiccups. App Services or Functions connect with the application running in the container; the sun is shining and birds are singing; in short, life is good.  
 But sometimes, clouds are inbound, bringing along all kinds of bugs (or features).  
 Whatever the reason, it could be a power outage in the Microsoft data center running your services or simply a scheduled maintenance operation. Servers can be rebooted, running images can be moved around, and from an SLA perspective, there's not a single reason why this would impact the SLA of your services.  
 Well, it doesn't, unless you have a VNET-enabled Azure Container Instance running, which is only accessible by calling it by its IP address, and all of a sudden this IP address changes.  
 
 In this situation, you will find out — probably a bit too late — that all connections have been dropped between your App Services, Functions,... and the container instance.  
-A short-term fix for this would be to simply adjust the configuration in the calling services to have them point to the new IP address. And this works; everything will be up and running again and functioning as well as it did before.  
-However, the sky will always remain a bit cloudy because it's solved for now, but will this issue happen again? When will this happen again? How often will this happen? Should I check this every day, hour or minute?  
-The first thing on your mind could, of course, be to make use of Azure Alerts, which could trigger based on the 'Restart Container Group'-action. That could work, yes, but it's not 100% fool-proof, because if the services are moved without restarting, they can also get a new IP address assigned, messing everything up again without you ever getting the alert.  
+A short-term fix for this would be to simply adjust the configuration in the calling services to have them point to the new IP address. And this works; everything will be up and running again and functioning as well as before.  
+However, the sky will always remain cloudy because it's solved for now, but will this issue happen again? When will this happen again? How often will this happen? Should I check this every day, hour or minute?  
+The first thing on your mind could, of course, be, to make use of Azure Alerts, which could trigger based on the 'Restart Container Group'-action. That could work, yes, but it's not 100% fool-proof, because if the services are moved without restarting, they can also get a new IP address assigned, messing everything up again without you ever getting the alert.  
 
 So, how can we make sure we've got this thing covered?  
-We could embed some kind of functionality inside of our application, which is running in the container, to periodically check the IP address and trigger an event if it has changed. But what should we do with those applications where we don't have any control over the container images, and what exactly is running? What if you have 10 different applications running? Do we need to implement the same functionality in all of these applications?  
+We could embed some kind of functionality inside our application, which runs in the container, to periodically check the IP address and trigger an event if it has changed. But what should we do with those applications where we don't have any control over the container images, and what exactly is running? What if you have 10 different applications running? Do we need to implement the same functionality in all of these applications?  
 Let's make it simple and make use of the sidecar pattern to offload this IP-checking functionality from the main container.  
 
 ## Sidecar Pattern
@@ -207,11 +208,11 @@ What does this require when running it inside an Azure Container Instance?
 - The container instance should be granted the "Reader" role on itself. It seems like this needs to be explicitly set; otherwise, it is not allowed to request its information using the AZ CLI.  
 
 ## Good to know
-Another, little less lightweight solution, could be to make use of Azure Container Apps set to an internal accessibility level.  
-In this setup, all container apps hosted within the Azure Container Apps Environment are only accessibly to services added to any other subnet within the same virtual network. However, this approach offers the advantage of using the Fully Qualified Domain Name (FQDN) instead of an IP address for communication, eliminating the need for setting up a sidecar, as describes above.  
+Another, a little less lightweight, solution could be to make use of Azure Container Apps set to an internal accessibility level.  
+In this setup, all container apps hosted within the Azure Container Apps Environment are only accessible to services added to any other subnet within the same virtual network. However, this approach offers the advantage of using the Fully Qualified Domain Name (FQDN) instead of an IP address for communication, eliminating the need for setting up a sidecar, as described above.  
 This can simplify the configuration and management of your containerized applications while providing enhanced accessibility within the virtual network environment.  
-Depending on your overall needs, you could stick to the simple, lightweight, cheaper option of Azure Container Instances, including a sidecar to monitor any IP changes, or opt for the more advanced Azure Container Apps in case you have more complex requirements.  
+Depending on your overall needs, you could stick to the simple, lightweight, cheaper option of Azure Container Instances, including a sidecar to monitor any IP changes or opt for the more advanced Azure Container Apps in case you have more complex requirements.  
 
 ## Conclusion
-Want to be sure that you're catching the change in IP addresses of a container instance that is running within a virtual network?  
-The easiest way to do this is to leverage the sidecar pattern and use a bash script to fetch the IP address. This is easy to reuse on any other container instance you'll be setting up within your subscription without having to do any additional development.  
+Want to be sure you're catching the change in IP addresses of a container instance running within a virtual network?  
+The easiest way to achieve this is to leverage the sidecar pattern and use a bash script to fetch the IP address. This is easy to reuse on any other container instance you'll be setting up within your subscription without requiring any additional development.  
