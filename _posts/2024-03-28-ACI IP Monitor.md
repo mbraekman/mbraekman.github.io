@@ -13,7 +13,7 @@ Join us as we unravel the mysteries of maintaining a clear sky in your Azure Con
 ## Steps
 - [Getting Started](#getting-started)
 - [Sidecar Pattern](#sidecar-pattern)
-- [Checking the IP address] (#checking-the-ip-address)
+- [Checking the IP address](#checking-the-ip-address)
 - [Creating the Container image](#creating-the-container-image)
 - [Good to know](#good-to-know)
 - [Conclusion](#conclusion)
@@ -39,7 +39,7 @@ Let's make it simple and make use of the sidecar pattern to offload this IP-chec
 But what exactly is this sidecar pattern?  
 
 This pattern is a certain design approach where an additional service — or container, in our case — runs alongside the main application to perform additional tasks that extend or enhance the functionality of this main application without directly affecting the core logic. This also means that our sidecar shouldn't even be running the same language or framework version and could be seen as a completely separate piece of software.  
-![Sidecar Pattern](../../../../img/posts/aci-ip-monitor/sidecar-pattern.png)
+![Sidecar Pattern](../../../../img/posts/aci-ip-monitor/sidecar-pattern.png)  
 _Image source: [Microsoft Learn - Sidecar pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/sidecar)_
 
 In our specific situation, we do not require any communication between the main application and our sidecar, since its main purpose is to verify the IP address of our container group.  
@@ -54,12 +54,12 @@ echo "${IPaddresses/'inet addr:'/}" | sed -e 's/^[[:space:]]*//' | cut -d' ' -f1
 ```
 
 Another way to do this, and this is the route we took, is to use AZ CLI to fetch the IP address, followed by updating the value stored in KeyVault, which was used as the configuration feed for multiple app services already. Another benefit of using AZ CLI is that we can use a role assignment to grant access for this container instance to upsert the secrets in KeyVault, so we don't need to store or provide any credentials to the container configuration.  
-Within our App Services or Functions, we of course made sure that we specified a ReloadInterval that was small enough to quickly catch any changes in the secret values upon registering KeyVault.  
+Within our App Services or Functions, we made sure that we specified a ReloadInterval that was small enough to quickly catch any changes in the secret values upon registering KeyVault.  
 
 Which resulted in the following setup:  
 ![IPMonitor Sidecar](../../../../img/posts/aci-ip-monitor/ContainerInstance-IpMonitor-Sidecar.png)
 
-As mentioned before, we chose to go for the bash-script approach in combination with AZ CLI, as this offers us the possibility to keep it rather simple to maintain yet provide all required functionality, and it allows us to use MSI to authenticate against KeyVault to update any secrets. Of course, all of its information, like the names of the KeyVault, the secret, the container instance, and the resource group, are fed to this script via the environment variables.  
+As mentioned before, we chose to go for the bash-script approach in combination with AZ CLI, as this offers us the possibility to keep it rather simple to maintain yet provide all required functionality, and it allows us to use MSI to authenticate against KeyVault to update any secrets. Of course, all of its information, like the names of the KeyVault, the secret, the container instance, and the resource group, is fed to this script via the environment variables.  
 ```bash
 #!/bin/bash
 update_ip()
@@ -91,11 +91,11 @@ done
 ```
 
 So, what exactly does this script do? A short recap:  
-- Authentication against AZ CLI, using managed identity  
-- Call the check_ip function every minute  
-- Check the current IP address of the container instance  
-- Compare this with the currently stored IP address in KeyVault  
-- Update the secret if the IP address has been changed  
+- Authentication against AZ CLI, using managed identity
+- Call the check_ip function every minute
+- Check the current IP address of the container instance
+- Compare this with the currently stored IP address in KeyVault
+- Update the secret if the IP address has been changed
 
 ## Creating the Container Image
 
@@ -132,7 +132,7 @@ services:
 ```
 
 
-The downside of this option, of course, is that we have now built our container image, and we need to host it somewhere. In our case, we've chosen to go for a single Azure Container Registry, which has been made part of a dedicated Azure DevOps pipeline to get this ACR up and running and to build and push the image, since this would be a requirement to have this available before the actual services are being created and also doesn't have to be updated every single time.  
+The downside of this option, of course, is that we have now built our container image and need to host it somewhere. In our case, we've chosen to go for a single Azure Container Registry, which has been made part of a dedicated Azure DevOps pipeline to get this ACR up and running and to build and push the image, since this would be a requirement to have this available before the actual services are being created and also doesn't have to be updated every single time.  
 
 ```yaml
   - task: AzurePowerShell@5
@@ -203,9 +203,9 @@ If you want to refer to this container image from Bicep when creating the actual
 ```
 
 What does this require when running it inside an Azure Container Instance?  
-- The subnet — yes we're still in a VNET — should be granted access to the KeyVault instance.  
-- The container instance should be granted the "Key Vault Secrets Officer" role on the shared KeyVault instance for it to be able to read and update secrets.  
-- The container instance should be granted the "Reader" role on itself. It seems like this needs to be explicitly set; otherwise, it is not allowed to request its information using the AZ CLI.  
+- The subnet — yes we're still in a VNET — should be granted access to the KeyVault instance.
+- The container instance should be granted the "Key Vault Secrets Officer" role on the shared KeyVault instance for it to be able to read and update secrets.
+- The container instance should be granted the "Reader" role on itself. It seems like this needs to be explicitly set; otherwise, it is not allowed to request its information using the AZ CLI.
 
 ## Good to know
 Another, a little less lightweight, solution could be to make use of Azure Container Apps set to an internal accessibility level.  
