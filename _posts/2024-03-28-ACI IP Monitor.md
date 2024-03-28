@@ -54,12 +54,12 @@ echo "${IPaddresses/'inet addr:'/}" | sed -e 's/^[[:space:]]*//' | cut -d' ' -f1
 ```
 
 Another way to do this, and this is the route we took, is to use AZ CLI to fetch the IP address, followed by updating the value stored in KeyVault, which was used as the configuration feed for multiple app services already. Another benefit of using AZ CLI is that we can use a role assignment to grant access for this container instance to upsert the secrets in KeyVault, so we don't need to store or provide any credentials to the container configuration.
-Within our App Services or Functions, we of course made sure that we specified a ReloadInterval that was small enough to quickly catch any changes in the secret values upon registering KeyVault.
+Within our App Services or Functions, we made sure that we specified a ReloadInterval that was small enough to quickly catch any changes in the secret values upon registering KeyVault.
 
 Which resulted in the following setup:
 ![IPMonitor Sidecar](../../../../img/posts/aci-ip-monitor/ContainerInstance-IpMonitor-Sidecar.png)
 
-As mentioned before, we chose to go for the bash-script approach in combination with AZ CLI, as this offers us the possibility to keep it rather simple to maintain yet provide all required functionality, and it allows us to use MSI to authenticate against KeyVault to update any secrets. Of course, all of its information, like the names of the KeyVault, the secret, the container instance, and the resource group, are fed to this script via the environment variables.
+As mentioned before, we chose to go for the bash-script approach in combination with AZ CLI, as this offers us the possibility to keep it rather simple to maintain yet provide all required functionality, and it allows us to use MSI to authenticate against KeyVault to update any secrets. Of course, all of its information, like the names of the KeyVault, the secret, the container instance, and the resource group, is fed to this script via the environment variables.
 ```bash
 #!/bin/bash
 update_ip()
@@ -132,7 +132,7 @@ services:
 ```
 
 
-The downside of this option, of course, is that we have now built our container image, and we need to host it somewhere. In our case, we've chosen to go for a single Azure Container Registry, which has been made part of a dedicated Azure DevOps pipeline to get this ACR up and running and to build and push the image, since this would be a requirement to have this available before the actual services are being created and also doesn't have to be updated every single time.
+The downside of this option, of course, is that we have now built our container image and need to host it somewhere. In our case, we've chosen to go for a single Azure Container Registry, which has been made part of a dedicated Azure DevOps pipeline to get this ACR up and running and to build and push the image, since this would be a requirement to have this available before the actual services are being created and also doesn't have to be updated every single time.
 
 ```yaml
   - task: AzurePowerShell@5
